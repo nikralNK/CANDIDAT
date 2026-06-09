@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1400" viewBox="0 0 1900 1400">
+  <defs>
+    <style>
+      .page { fill: #fff; }
+      .title { font: 700 30px Arial, sans-serif; fill: #111827; }
+      .subtitle { font: 16px Arial, sans-serif; fill: #4b5563; }
+      .entity { fill: #fff; stroke: #374151; stroke-width: 2; rx: 8; }
+      .head { stroke: #374151; stroke-width: 2; }
+      .blue { fill: #dbeafe; }
+      .green { fill: #dcfce7; }
+      .yellow { fill: #fef3c7; }
+      .red { fill: #fee2e2; }
+      .purple { fill: #ede9fe; }
+      .orange { fill: #ffedd5; }
+      .name { font: 700 16px Arial, sans-serif; fill: #111827; }
+      .attr { font: 13px Arial, sans-serif; fill: #111827; }
+      .key { font: 700 13px Arial, sans-serif; fill: #991b1b; }
+      .line { stroke: #374151; stroke-width: 2; fill: none; }
+      .rel { font: 12px Arial, sans-serif; fill: #374151; font-weight: 700; }
+      .note { fill: #fefce8; stroke: #ca8a04; stroke-width: 1.6; rx: 10; }
+      .noteText { font: 14px Arial, sans-serif; fill: #713f12; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1900" height="1400"/>
+  <text x="950" y="42" text-anchor="middle" class="title">Логическая модель данных в 3НФ</text>
+  <text x="950" y="70" text-anchor="middle" class="subtitle">Справочники вынесены отдельно, анкета хранит ссылки, Excel формируется автоматически</text>
+
+  <!-- Users / candidate block -->
+  <rect x="60" y="115" width="300" height="205" class="entity"/>
+  <rect x="60" y="115" width="300" height="38" class="head purple"/>
+  <text x="210" y="140" text-anchor="middle" class="name">Пользователь</text>
+  <text x="82" y="178" class="key">ID пользователя</text>
+  <text x="82" y="203" class="attr">ФИО пользователя</text>
+  <text x="82" y="228" class="attr">Логин</text>
+  <text x="82" y="253" class="attr">Пароль</text>
+  <text x="82" y="278" class="attr">Роль</text>
+  <text x="82" y="303" class="attr">Статус учетной записи</text>
+
+  <rect x="470" y="115" width="300" height="205" class="entity"/>
+  <rect x="470" y="115" width="300" height="38" class="head blue"/>
+  <text x="620" y="140" text-anchor="middle" class="name">Кандидат</text>
+  <text x="492" y="178" class="key">ID кандидата</text>
+  <text x="492" y="203" class="attr">ID пользователя</text>
+  <text x="492" y="228" class="attr">ФИО кандидата</text>
+  <text x="492" y="253" class="attr">Дата рождения</text>
+  <text x="492" y="278" class="attr">Телефон</text>
+  <text x="492" y="303" class="attr">Email</text>
+
+  <rect x="60" y="440" width="300" height="205" class="entity"/>
+  <rect x="60" y="440" width="300" height="38" class="head blue"/>
+  <text x="210" y="465" text-anchor="middle" class="name">Образование</text>
+  <text x="82" y="503" class="key">ID образования</text>
+  <text x="82" y="528" class="attr">ID кандидата</text>
+  <text x="82" y="553" class="attr">Уровень образования</text>
+  <text x="82" y="578" class="attr">Вид образования</text>
+  <text x="82" y="603" class="attr">Учебное заведение</text>
+  <text x="82" y="628" class="attr">Документ</text>
+
+  <rect x="470" y="430" width="340" height="255" class="entity"/>
+  <rect x="470" y="430" width="340" height="38" class="head yellow"/>
+  <text x="640" y="455" text-anchor="middle" class="name">Анкета кандидата</text>
+  <text x="492" y="493" class="key">ID анкеты</text>
+  <text x="492" y="518" class="attr">ID кандидата</text>
+  <text x="492" y="543" class="attr">ID источника сведений</text>
+  <text x="492" y="568" class="attr">ID вакансии</text>
+  <text x="492" y="593" class="attr">Дата создания</text>
+  <text x="492" y="618" class="attr">Дата отправки</text>
+  <text x="492" y="643" class="attr">Статус анкеты</text>
+  <text x="492" y="668" class="attr">Комментарий / иные сведения</text>
+
+  <!-- Dictionaries -->
+  <rect x="930" y="115" width="285" height="180" class="entity"/>
+  <rect x="930" y="115" width="285" height="38" class="head green"/>
+  <text x="1072" y="140" text-anchor="middle" class="name">Источник сведений</text>
+  <text x="952" y="178" class="key">ID источника</text>
+  <text x="952" y="203" class="attr">Наименование</text>
+  <text x="952" y="228" class="attr">Активность</text>
+  <text x="952" y="253" class="attr">Порядок отображения</text>
+
+  <rect x="930" y="365" width="285" height="180" class="entity"/>
+  <rect x="930" y="365" width="285" height="38" class="head green"/>
+  <text x="1072" y="390" text-anchor="middle" class="name">Категория службы</text>
+  <text x="952" y="428" class="key">ID категории</text>
+  <text x="952" y="453" class="attr">Наименование</text>
+  <text x="952" y="478" class="attr">Активность</text>
+  <text x="952" y="503" class="attr">Порядок отображения</text>
+
+  <rect x="930" y="615" width="285" height="180" class="entity"/>
+  <rect x="930" y="615" width="285" height="38" class="head green"/>
+  <text x="1072" y="640" text-anchor="middle" class="name">Служба</text>
+  <text x="952" y="678" class="key">ID службы</text>
+  <text x="952" y="703" class="attr">Наименование</text>
+  <text x="952" y="728" class="attr">Активность</text>
+  <text x="952" y="753" class="attr">Порядок отображения</text>
+
+  <rect x="1300" y="115" width="305" height="205" class="entity"/>
+  <rect x="1300" y="115" width="305" height="38" class="head green"/>
+  <text x="1452" y="140" text-anchor="middle" class="name">Подразделение</text>
+  <text x="1322" y="178" class="key">ID подразделения</text>
+  <text x="1322" y="203" class="attr">Наименование</text>
+  <text x="1322" y="228" class="attr">Тип подразделения</text>
+  <text x="1322" y="253" class="attr">ID родительского подразделения</text>
+  <text x="1322" y="278" class="attr">Активность</text>
+
+  <rect x="1300" y="390" width="305" height="205" class="entity"/>
+  <rect x="1300" y="390" width="305" height="38" class="head green"/>
+  <text x="1452" y="415" text-anchor="middle" class="name">Должность</text>
+  <text x="1322" y="453" class="key">ID должности</text>
+  <text x="1322" y="478" class="attr">Наименование</text>
+  <text x="1322" y="503" class="attr">Начальствующий состав</text>
+  <text x="1322" y="528" class="attr">Активность</text>
+  <text x="1322" y="553" class="attr">Порядок отображения</text>
+
+  <rect x="1300" y="675" width="325" height="230" class="entity"/>
+  <rect x="1300" y="675" width="325" height="38" class="head orange"/>
+  <text x="1462" y="700" text-anchor="middle" class="name">Вакансия / доступная должность</text>
+  <text x="1322" y="738" class="key">ID вакансии</text>
+  <text x="1322" y="763" class="attr">ID категории</text>
+  <text x="1322" y="788" class="attr">ID подразделения</text>
+  <text x="1322" y="813" class="attr">ID службы</text>
+  <text x="1322" y="838" class="attr">ID должности</text>
+  <text x="1322" y="863" class="attr">Активность</text>
+
+  <!-- HR process -->
+  <rect x="470" y="850" width="340" height="230" class="entity"/>
+  <rect x="470" y="850" width="340" height="38" class="head yellow"/>
+  <text x="640" y="875" text-anchor="middle" class="name">Карточка оформления</text>
+  <text x="492" y="913" class="key">ID карточки</text>
+  <text x="492" y="938" class="attr">ID анкеты</text>
+  <text x="492" y="963" class="attr">Дата заявления</text>
+  <text x="492" y="988" class="attr">Дата принятия в работу</text>
+  <text x="492" y="1013" class="attr">Стадия изучения</text>
+  <text x="492" y="1038" class="attr">Иные сведения кадровика</text>
+
+  <rect x="930" y="900" width="285" height="180" class="entity"/>
+  <rect x="930" y="900" width="285" height="38" class="head green"/>
+  <text x="1072" y="925" text-anchor="middle" class="name">Тип этапа изучения</text>
+  <text x="952" y="963" class="key">ID типа этапа</text>
+  <text x="952" y="988" class="attr">Наименование</text>
+  <text x="952" y="1013" class="attr">Активность</text>
+  <text x="952" y="1038" class="attr">Порядок отображения</text>
+
+  <rect x="1300" y="970" width="305" height="205" class="entity"/>
+  <rect x="1300" y="970" width="305" height="38" class="head red"/>
+  <text x="1452" y="995" text-anchor="middle" class="name">Этап изучения</text>
+  <text x="1322" y="1033" class="key">ID этапа</text>
+  <text x="1322" y="1058" class="attr">ID карточки</text>
+  <text x="1322" y="1083" class="attr">ID типа этапа</text>
+  <text x="1322" y="1108" class="attr">Дата направления</text>
+  <text x="1322" y="1133" class="attr">Дата результата</text>
+  <text x="1322" y="1158" class="attr">Результат</text>
+
+  <rect x="930" y="1160" width="285" height="180" class="entity"/>
+  <rect x="930" y="1160" width="285" height="38" class="head green"/>
+  <text x="1072" y="1185" text-anchor="middle" class="name">Тип служебной проверки</text>
+  <text x="952" y="1223" class="key">ID типа проверки</text>
+  <text x="952" y="1248" class="attr">Наименование</text>
+  <text x="952" y="1273" class="attr">Активность</text>
+  <text x="952" y="1298" class="attr">Порядок отображения</text>
+
+  <rect x="1300" y="1210" width="305" height="205" class="entity"/>
+  <rect x="1300" y="1210" width="305" height="38" class="head red"/>
+  <text x="1452" y="1235" text-anchor="middle" class="name">Служебная проверка</text>
+  <text x="1322" y="1273" class="key">ID проверки</text>
+  <text x="1322" y="1298" class="attr">ID карточки</text>
+  <text x="1322" y="1323" class="attr">ID типа проверки</text>
+  <text x="1480" y="1298" class="attr">Даты, результат</text>
+
+  <rect x="60" y="900" width="300" height="205" class="entity"/>
+  <rect x="60" y="900" width="300" height="38" class="head yellow"/>
+  <text x="210" y="925" text-anchor="middle" class="name">Итоговое решение</text>
+  <text x="82" y="963" class="key">ID решения</text>
+  <text x="82" y="988" class="attr">ID карточки</text>
+  <text x="82" y="1013" class="attr">Тип решения</text>
+  <text x="82" y="1038" class="attr">Дата решения</text>
+  <text x="82" y="1063" class="attr">Причина отказа</text>
+  <text x="82" y="1088" class="attr">Реквизиты приказа</text>
+
+  <!-- Report block -->
+  <rect x="60" y="1210" width="300" height="180" class="entity"/>
+  <rect x="60" y="1210" width="300" height="38" class="head purple"/>
+  <text x="210" y="1235" text-anchor="middle" class="name">Шаблон отчета</text>
+  <text x="82" y="1273" class="key">ID шаблона</text>
+  <text x="82" y="1298" class="attr">Наименование шаблона</text>
+  <text x="82" y="1323" class="attr">Заголовок отчета</text>
+  <text x="82" y="1348" class="attr">Активность</text>
+
+  <rect x="470" y="1195" width="340" height="205" class="entity"/>
+  <rect x="470" y="1195" width="340" height="38" class="head purple"/>
+  <text x="640" y="1220" text-anchor="middle" class="name">Колонка шаблона отчета</text>
+  <text x="492" y="1258" class="key">ID колонки шаблона</text>
+  <text x="492" y="1283" class="attr">ID шаблона</text>
+  <text x="492" y="1308" class="attr">Номер колонки Excel</text>
+  <text x="492" y="1333" class="attr">Заголовок / источник данных</text>
+
+  <rect x="1660" y="1040" width="260" height="180" class="entity"/>
+  <rect x="1660" y="1040" width="260" height="38" class="head purple"/>
+  <text x="1790" y="1065" text-anchor="middle" class="name">Выгрузка отчета</text>
+  <text x="1678" y="1103" class="key">ID выгрузки</text>
+  <text x="1678" y="1128" class="attr">ID шаблона</text>
+  <text x="1678" y="1153" class="attr">ID пользователя</text>
+  <text x="1678" y="1178" class="attr">Период, файл, дата</text>
+
+  <!-- Lines / cardinalities -->
+  <line x1="360" y1="220" x2="470" y2="220" class="line"/><text x="390" y="205" class="rel">1</text><text x="445" y="205" class="rel">0..1</text>
+  <line x1="620" y1="320" x2="640" y2="430" class="line"/><text x="635" y="355" class="rel">1</text><text x="650" y="410" class="rel">0..N</text>
+  <line x1="470" y1="565" x2="360" y2="565" class="line"/><text x="440" y="550" class="rel">1</text><text x="382" y="550" class="rel">0..N</text>
+  <line x1="810" y1="540" x2="930" y2="210" class="line"/><text x="825" y="525" class="rel">N</text><text x="910" y="225" class="rel">1</text>
+  <line x1="810" y1="575" x2="1300" y2="790" class="line"/><text x="828" y="600" class="rel">N</text><text x="1270" y="780" class="rel">1</text>
+
+  <line x1="1215" y1="455" x2="1300" y2="755" class="line"/><text x="1230" y="480" class="rel">1</text><text x="1280" y="745" class="rel">0..N</text>
+  <line x1="1215" y1="705" x2="1300" y2="810" class="line"/><text x="1230" y="725" class="rel">1</text><text x="1280" y="795" class="rel">0..N</text>
+  <line x1="1452" y1="320" x2="1462" y2="675" class="line"/><text x="1470" y="345" class="rel">1</text><text x="1470" y="660" class="rel">0..N</text>
+  <line x1="1452" y1="595" x2="1462" y2="675" class="line"/><text x="1470" y="620" class="rel">1</text><text x="1470" y="660" class="rel">0..N</text>
+
+  <line x1="640" y1="685" x2="640" y2="850" class="line"/><text x="655" y="730" class="rel">1</text><text x="655" y="830" class="rel">0..1</text>
+  <line x1="470" y1="1000" x2="360" y2="1000" class="line"/><text x="440" y="985" class="rel">1</text><text x="385" y="985" class="rel">0..1</text>
+  <line x1="810" y1="1000" x2="1300" y2="1070" class="line"/><text x="830" y="990" class="rel">1</text><text x="1270" y="1055" class="rel">0..N</text>
+  <line x1="1215" y1="990" x2="1300" y2="1075" class="line"/><text x="1230" y="1010" class="rel">1</text><text x="1270" y="1060" class="rel">0..N</text>
+  <line x1="810" y1="1035" x2="1300" y2="1295" class="line"/><text x="830" y="1055" class="rel">1</text><text x="1270" y="1280" class="rel">0..N</text>
+  <line x1="1215" y1="1250" x2="1300" y2="1320" class="line"/><text x="1230" y="1270" class="rel">1</text><text x="1270" y="1305" class="rel">0..N</text>
+
+  <line x1="360" y1="1300" x2="470" y2="1300" class="line"/><text x="390" y="1285" class="rel">1</text><text x="445" y="1285" class="rel">1..N</text>
+  <line x1="360" y1="1265" x2="1660" y2="1120" class="line"/><text x="390" y="1250" class="rel">1</text><text x="1630" y="1105" class="rel">0..N</text>
+  <line x1="210" y1="320" x2="1660" y2="1150" class="line"/><text x="235" y="345" class="rel">1</text><text x="1630" y="1140" class="rel">0..N</text>
+
+  <!-- Note -->
+  <rect x="1030" y="1320" width="660" height="55" class="note"/>
+  <text x="1360" y="1343" text-anchor="middle" class="noteText">3НФ: анкета хранит ID вакансии, карточка не дублирует должность,</text>
+  <text x="1360" y="1365" text-anchor="middle" class="noteText">а настройки Excel вынесены в отдельные колонки шаблона отчета.</text>
+</svg>

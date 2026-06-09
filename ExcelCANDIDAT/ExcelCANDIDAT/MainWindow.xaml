@@ -1,0 +1,285 @@
+<Window x:Class="ExcelCANDIDAT.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Учет кандидатов" Height="780" Width="1200"
+        MinHeight="700" MinWidth="1050"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="Margin" Value="0,4,0,10"/>
+            <Setter Property="Padding" Value="7,3"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="Margin" Value="0,4,0,10"/>
+            <EventSetter Event="PreviewMouseWheel" Handler="ComboBox_PreviewMouseWheel"/>
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="Margin" Value="0,4,0,10"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="Padding" Value="12,4"/>
+            <Setter Property="Margin" Value="0,8,8,0"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Background="#F4F6F8">
+        <Border DockPanel.Dock="Top" Background="#1F2937" Padding="16,12">
+            <StackPanel>
+                <TextBlock Text="Учет кандидатов для приема на службу"
+                           Foreground="White"
+                           FontSize="22"
+                           FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+
+        <Grid Margin="14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Карточки кандидатов">
+                <DockPanel>
+                    <Button DockPanel.Dock="Top"
+                            Content="Обновить из БД"
+                            Click="RefreshButton_Click"
+                            HorizontalAlignment="Left"/>
+                    <DataGrid x:Name="CardsGrid"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              SelectionChanged="CardsGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                            <DataGridTextColumn Header="Стадия" Binding="{Binding StudyStage}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </GroupBox>
+
+            <TabControl Grid.Column="2">
+                <TabItem Header="Новая карточка">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <Grid Margin="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="18"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <GroupBox Header="Данные кандидата">
+                                <StackPanel>
+                                    <TextBlock Text="Фамилия"/>
+                                    <TextBox x:Name="LastNameTextBox"/>
+                                    <TextBlock Text="Имя"/>
+                                    <TextBox x:Name="FirstNameTextBox"/>
+                                    <TextBlock Text="Отчество"/>
+                                    <TextBox x:Name="MiddleNameTextBox"/>
+                                    <TextBlock Text="Дата рождения"/>
+                                    <DatePicker x:Name="BirthDatePicker"/>
+                                    <TextBlock Text="Телефон"/>
+                                    <TextBox x:Name="PhoneTextBox"/>
+                                    <TextBlock Text="Email"/>
+                                    <TextBox x:Name="EmailTextBox"/>
+                                    <TextBlock Text="Уровень образования"/>
+                                    <TextBox x:Name="EducationLevelTextBox"/>
+                                    <TextBlock Text="Вид образования"/>
+                                    <TextBox x:Name="EducationTypeTextBox"/>
+                                    <TextBlock Text="Учебное заведение"/>
+                                    <TextBox x:Name="InstitutionTextBox"/>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Grid.Column="2" Header="Оформление">
+                                <StackPanel>
+                                    <TextBlock Text="Дата заявления"/>
+                                    <DatePicker x:Name="StatementDatePicker"/>
+                                    <TextBlock Text="Источник сведений"/>
+                                    <ComboBox x:Name="SourceComboBox" DisplayMemberPath="Name"/>
+                                    <TextBlock Text="Категория службы"/>
+                                    <ComboBox x:Name="CategoryComboBox"
+                                              DisplayMemberPath="Name"
+                                              SelectionChanged="CategoryComboBox_SelectionChanged"/>
+                                    <TextBlock Text="Должность"/>
+                                    <ComboBox x:Name="VacancyComboBox"
+                                              DisplayMemberPath="PositionName"
+                                              SelectionChanged="VacancyComboBox_SelectionChanged"/>
+                                    <TextBlock Text="Наименование службы"/>
+                                    <ComboBox x:Name="ServiceNameComboBox" DisplayMemberPath="ServiceName"/>
+                                    <TextBlock Text="Иные сведения"/>
+                                    <TextBox x:Name="OtherInfoTextBox"
+                                             Height="80"
+                                             AcceptsReturn="True"
+                                             TextWrapping="Wrap"/>
+                                    <Button Content="Создать карточку"
+                                            Click="CreateCardButton_Click"
+                                            HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="Этапы и проверки">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="8">
+                            <GroupBox Header="Выбранная карточка">
+                                <TextBlock x:Name="SelectedCardTextBlock" FontWeight="SemiBold"/>
+                            </GroupBox>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <GroupBox Header="Этапы изучения">
+                                    <StackPanel>
+                                        <TextBlock Text="Тип этапа"/>
+                                        <ComboBox x:Name="StageTypeComboBox" DisplayMemberPath="Name"/>
+                                        <TextBlock Text="Дата направления"/>
+                                        <DatePicker x:Name="StageDirectionDatePicker"/>
+                                        <TextBlock Text="Дата результата"/>
+                                        <DatePicker x:Name="StageResultDatePicker"/>
+                                        <TextBlock Text="Результат"/>
+                                        <TextBox x:Name="StageResultTextBox"/>
+                                        <Button Content="Сохранить этап"
+                                                Click="SaveStageButton_Click"
+                                                Width="140"
+                                                HorizontalAlignment="Left"/>
+                                        <DataGrid x:Name="StagesGrid"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  IsReadOnly="True"
+                                                  Height="180"
+                                                  Margin="0,12,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Этап" Binding="{Binding StageTypeName}" Width="*"/>
+                                                <DataGridTextColumn Header="Дата" Binding="{Binding DirectionDateText}" Width="110"/>
+                                                <DataGridTextColumn Header="Результат" Binding="{Binding ResultText}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <GroupBox Grid.Column="2" Header="Служебные проверки">
+                                    <StackPanel>
+                                        <TextBlock Text="Тип проверки"/>
+                                        <ComboBox x:Name="CheckTypeComboBox" DisplayMemberPath="Name"/>
+                                        <TextBlock Text="Дата направления"/>
+                                        <DatePicker x:Name="CheckDirectionDatePicker"/>
+                                        <TextBlock Text="Дата результата"/>
+                                        <DatePicker x:Name="CheckResultDatePicker"/>
+                                        <TextBlock Text="Результат"/>
+                                        <TextBox x:Name="CheckResultTextBox"/>
+                                        <Button Content="Сохранить проверку"
+                                                Click="SaveCheckButton_Click"
+                                                Width="140"
+                                                HorizontalAlignment="Left"/>
+                                        <DataGrid x:Name="ChecksGrid"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  IsReadOnly="True"
+                                                  Height="180"
+                                                  Margin="0,12,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Проверка" Binding="{Binding CheckTypeName}" Width="*"/>
+                                                <DataGridTextColumn Header="Дата" Binding="{Binding DirectionDateText}" Width="110"/>
+                                                <DataGridTextColumn Header="Результат" Binding="{Binding ResultText}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </GroupBox>
+                            </Grid>
+
+                            <GroupBox Header="Итоговое решение">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,10,0">
+                                        <TextBlock Text="Решение"/>
+                                        <ComboBox x:Name="DecisionTypeComboBox"
+                                                  Height="34"
+                                                  HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="На оформлении"/>
+                                            <ComboBoxItem Content="Принят"/>
+                                            <ComboBoxItem Content="Отказ"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                        <TextBlock Text="Дата решения"/>
+                                        <DatePicker x:Name="DecisionDatePicker"
+                                                    Height="34"
+                                                    HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                                        <TextBlock Text="Причина отказа"/>
+                                        <TextBox x:Name="RefusalReasonTextBox"
+                                                 Height="34"
+                                                 HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3">
+                                        <TextBlock Text="Реквизиты приказа"/>
+                                        <TextBox x:Name="OrderDetailsTextBox"
+                                                 Height="34"
+                                                 HorizontalAlignment="Stretch"/>
+                                        <Button Content="Сохранить решение"
+                                                Click="SaveDecisionButton_Click"
+                                                HorizontalAlignment="Left"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="Отчет Excel">
+                    <StackPanel Margin="8">
+                        <GroupBox Header="Автоматическое формирование отчета">
+                            <WrapPanel>
+                                <TextBlock Text="Месяц:" Margin="0,0,8,0"/>
+                                <ComboBox x:Name="ReportMonthComboBox" Width="100"/>
+                                <TextBlock Text="Год:" Margin="18,0,8,0"/>
+                                <TextBox x:Name="ReportYearTextBox" Width="90"/>
+                                <Button Content="Сформировать Excel-файл"
+                                        Click="ExportReportButton_Click"
+                                        Margin="18,0,0,0"/>
+                            </WrapPanel>
+                        </GroupBox>
+                        <DataGrid x:Name="ReportGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  Height="430">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                                <DataGridTextColumn Header="Дата рождения" Binding="{Binding BirthDateText}" Width="120"/>
+                                <DataGridTextColumn Header="Категория" Binding="{Binding CategoryName}" Width="120"/>
+                                <DataGridTextColumn Header="Подразделение" Binding="{Binding DepartmentName}" Width="*"/>
+                                <DataGridTextColumn Header="Должность" Binding="{Binding PositionName}" Width="*"/>
+                                <DataGridTextColumn Header="Стадия" Binding="{Binding StudyStage}" Width="140"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</Window>
