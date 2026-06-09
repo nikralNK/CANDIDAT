@@ -2,6 +2,7 @@ using System;
 
 namespace ExcelCANDIDAT
 {
+    // Простая модель для справочников: ID хранится в базе, Name показывается пользователю.
     public class LookupItem
     {
         public int Id { get; set; }
@@ -13,6 +14,7 @@ namespace ExcelCANDIDAT
         }
     }
 
+    // Вакансия в проекте состоит из нескольких справочников: категория, подразделение, служба и должность.
     public class VacancyOption
     {
         public int Id { get; set; }
@@ -26,11 +28,13 @@ namespace ExcelCANDIDAT
         {
             get
             {
+                // Это полное название пригодится, если нужно показать вакансию одной строкой.
                 return CategoryName + " / " + DepartmentName + " / " + ServiceName + " / " + PositionName;
             }
         }
     }
 
+    // Строка карточки кандидата, которая выводится в таблицах приложения и идет в Excel-отчет.
     public class CandidateCardRow
     {
         public int CardId { get; set; }
@@ -50,6 +54,7 @@ namespace ExcelCANDIDAT
         public string OtherInfo { get; set; }
     }
 
+    // Строка этапа изучения кандидата.
     public class StageRow
     {
         public int StageId { get; set; }
@@ -60,6 +65,7 @@ namespace ExcelCANDIDAT
         public string ResultText { get; set; }
     }
 
+    // Строка служебной проверки кандидата.
     public class CheckRow
     {
         public int CheckId { get; set; }

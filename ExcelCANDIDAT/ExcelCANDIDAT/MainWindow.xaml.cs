@@ -14,8 +14,13 @@ namespace ExcelCANDIDAT
 {
     public partial class MainWindow : Window
     {
+        // Сервис нужен, чтобы вся работа с базой была в одном месте.
         private readonly DatabaseService _database = new DatabaseService();
+
+        // Здесь храню карточки, которые показываются в таблице слева и в отчете.
         private List<CandidateCardRow> _cards = new List<CandidateCardRow>();
+
+        // Это список вакансий для выбранной категории, из него потом выбирается должность и служба.
         private List<VacancyOption> _categoryVacancies = new List<VacancyOption>();
 
         public MainWindow()
@@ -27,11 +32,13 @@ namespace ExcelCANDIDAT
 
         private CandidateCardRow SelectedCard
         {
+            // Так удобнее получать выбранную карточку, чтобы не писать одно и то же в разных методах.
             get { return CardsGrid.SelectedItem as CandidateCardRow; }
         }
 
         private void PrepareDefaultValues()
         {
+            // Сразу выставляю начальные значения, чтобы форма не была пустой при запуске.
             var maxBirthDate = GetMaxCandidateBirthDate();
             BirthDatePicker.DisplayDateEnd = maxBirthDate;
             BirthDatePicker.BlackoutDates.Add(new CalendarDateRange(maxBirthDate.AddDays(1), DateTime.MaxValue));
@@ -55,6 +62,7 @@ namespace ExcelCANDIDAT
 
         private void LoadFromDatabase()
         {
+            // Сначала проверяю подключение, потому что без базы большая часть формы работать не сможет.
             string errorText;
             if (!_database.CanConnect(out errorText))
             {
@@ -70,11 +78,13 @@ namespace ExcelCANDIDAT
 
             _database.EnsureDefaultVacancies();
 
+            // Загружаю справочники в выпадающие списки.
             SourceComboBox.ItemsSource = _database.GetSources();
             CategoryComboBox.ItemsSource = _database.GetCategories();
             StageTypeComboBox.ItemsSource = _database.GetStageTypes();
             CheckTypeComboBox.ItemsSource = _database.GetCheckTypes();
 
+            // Выбираю первые значения, чтобы кадровику не приходилось начинать с пустых списков.
             if (SourceComboBox.Items.Count > 0) SourceComboBox.SelectedIndex = 0;
             if (CategoryComboBox.Items.Count > 0) CategoryComboBox.SelectedIndex = 0;
             if (StageTypeComboBox.Items.Count > 0) StageTypeComboBox.SelectedIndex = 0;
@@ -85,6 +95,7 @@ namespace ExcelCANDIDAT
 
         private void RefreshCards()
         {
+            // Обновляю список карточек после сохранения или ручного нажатия кнопки "Обновить".
             _cards = _database.GetCards();
             CardsGrid.ItemsSource = _cards;
             ReportGrid.ItemsSource = _cards;
@@ -101,6 +112,7 @@ namespace ExcelCANDIDAT
 
         private void RefreshSelectedCardDetails()
         {
+            // Когда выбираем карточку, справа показываются ее этапы и проверки.
             var card = SelectedCard;
 
             if (card == null)
@@ -123,6 +135,7 @@ namespace ExcelCANDIDAT
 
         private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Категория влияет на список доступных должностей.
             var category = CategoryComboBox.SelectedItem as LookupItem;
             if (category == null)
             {
@@ -151,6 +164,7 @@ namespace ExcelCANDIDAT
 
         private void VacancyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // После выбора должности оставляю только те службы, где такая должность есть.
             var vacancy = VacancyComboBox.SelectedItem as VacancyOption;
             if (vacancy == null)
             {
@@ -199,6 +213,7 @@ namespace ExcelCANDIDAT
 
         private void CreateCardButton_Click(object sender, RoutedEventArgs e)
         {
+            // Перед сохранением проверяю форму, чтобы в базу не ушли пустые или неправильные данные.
             if (!ValidateCardForm())
             {
                 return;
@@ -228,6 +243,7 @@ namespace ExcelCANDIDAT
 
         private bool ValidateCardForm()
         {
+            // Здесь собраны проверки для карточки кандидата. Если что-то не заполнено, показываю предупреждение.
             if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
             {
                 ShowWarning("Введите фамилию кандидата.");
@@ -299,6 +315,7 @@ namespace ExcelCANDIDAT
 
         private VacancyOption GetSelectedVacancy()
         {
+            // В интерфейсе должность и служба выбираются отдельно, а в базе хранится одна связка VacancyId.
             var position = VacancyComboBox.SelectedItem as VacancyOption;
             var service = ServiceNameComboBox.SelectedItem as VacancyOption;
 
@@ -322,6 +339,7 @@ namespace ExcelCANDIDAT
 
         private void ClearCardForm()
         {
+            // Очищаю форму после сохранения, чтобы можно было сразу заносить следующего кандидата.
             LastNameTextBox.Clear();
             FirstNameTextBox.Clear();
             MiddleNameTextBox.Clear();
@@ -337,6 +355,7 @@ namespace ExcelCANDIDAT
 
         private void SaveStageButton_Click(object sender, RoutedEventArgs e)
         {
+            // Этап изучения сохраняется только для выбранной карточки кандидата.
             var card = SelectedCard;
             var stageType = StageTypeComboBox.SelectedItem as LookupItem;
 
@@ -359,6 +378,7 @@ namespace ExcelCANDIDAT
 
         private void SaveCheckButton_Click(object sender, RoutedEventArgs e)
         {
+            // Служебная проверка тоже привязывается к выбранной карточке.
             var card = SelectedCard;
             var checkType = CheckTypeComboBox.SelectedItem as LookupItem;
 
@@ -381,6 +401,7 @@ namespace ExcelCANDIDAT
 
         private void SaveDecisionButton_Click(object sender, RoutedEventArgs e)
         {
+            // Итоговое решение меняет общий статус карточки кандидата.
             var card = SelectedCard;
             if (card == null)
             {
@@ -409,6 +430,7 @@ namespace ExcelCANDIDAT
 
         private void ExportReportButton_Click(object sender, RoutedEventArgs e)
         {
+            // Для отчета берем только карточки за выбранный месяц и год.
             int month;
             int year;
 
@@ -475,6 +497,7 @@ namespace ExcelCANDIDAT
 
         private static void AppendRow(StringBuilder builder, params string[] values)
         {
+            // Каждая строка Excel-отчета собирается из обычных ячеек XML.
             builder.AppendLine("<Row>");
             foreach (var value in values)
             {
@@ -487,11 +510,13 @@ namespace ExcelCANDIDAT
 
         private static void ShowWarning(string text)
         {
+            // Общий метод для предупреждений, чтобы все сообщения выглядели одинаково.
             MessageBox.Show(text, "Проверьте данные", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
+            // Ищу родительский элемент, чтобы прокрутка колесиком продолжала работать у всей формы.
             var parentObject = VisualTreeHelper.GetParent(child);
             if (parentObject == null)
             {

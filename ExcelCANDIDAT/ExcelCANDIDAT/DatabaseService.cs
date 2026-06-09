@@ -8,6 +8,7 @@ namespace ExcelCANDIDAT
 {
     public class DatabaseService
     {
+        // Строка подключения берется из App.config, чтобы не писать ее в каждом методе.
         private readonly string _connectionString;
 
         public DatabaseService()
@@ -17,6 +18,7 @@ namespace ExcelCANDIDAT
 
         public bool CanConnect(out string errorText)
         {
+            // Пробую открыть соединение. Если не получилось, возвращаю текст ошибки для окна сообщения.
             try
             {
                 using (var connection = CreateConnection())
@@ -36,8 +38,10 @@ namespace ExcelCANDIDAT
 
         public List<CandidateCardRow> GetCards()
         {
+            // Этот метод собирает основной список карточек для таблицы в приложении.
             var result = new List<CandidateCardRow>();
 
+            // Здесь соединяю карточку кандидата со справочниками, чтобы вывести понятные названия, а не ID.
             const string sql = @"
 SELECT
     pc.CardId,
@@ -76,6 +80,7 @@ ORDER BY pc.StatementDate DESC, c.FullName;";
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
+                    // SqlDataReader читает строки по одной, поэтому каждую строку перекладываю в модель.
                     while (reader.Read())
                     {
                         result.Add(new CandidateCardRow
@@ -103,6 +108,7 @@ ORDER BY pc.StatementDate DESC, c.FullName;";
 
         public void EnsureDefaultVacancies()
         {
+            // Если справочники еще не заполнены, добавляю базовые значения для учебного примера.
             const string sql = @"
 IF NOT EXISTS (SELECT 1 FROM dbo.ServiceCategories WHERE CategoryName = N'Юстиция')
     INSERT INTO dbo.ServiceCategories (CategoryName) VALUES (N'Юстиция');
@@ -174,28 +180,34 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Vacancies WHERE CategoryId = @InternalCategoryI
 
         public List<LookupItem> GetSources()
         {
+            // Источник сведений: рекомендация, объявление и другие варианты.
             return GetLookupItems("SELECT SourceId AS Id, SourceName AS Name FROM dbo.InformationSources ORDER BY SourceName");
         }
 
         public List<LookupItem> GetCategories()
         {
+            // Категория службы нужна, чтобы потом отфильтровать подходящие должности.
             return GetLookupItems("SELECT CategoryId AS Id, CategoryName AS Name FROM dbo.ServiceCategories ORDER BY CategoryName");
         }
 
         public List<LookupItem> GetStageTypes()
         {
+            // Типы этапов изучения кандидата выводятся в выпадающем списке.
             return GetLookupItems("SELECT StageTypeId AS Id, StageTypeName AS Name FROM dbo.StudyStageTypes ORDER BY StageTypeId");
         }
 
         public List<LookupItem> GetCheckTypes()
         {
+            // Типы служебных проверок тоже берутся из справочника.
             return GetLookupItems("SELECT CheckTypeId AS Id, CheckTypeName AS Name FROM dbo.CheckTypes ORDER BY CheckTypeId");
         }
 
         public List<VacancyOption> GetVacancies(int? categoryId)
         {
+            // Возвращаю вакансии по выбранной категории службы.
             var result = new List<VacancyOption>();
 
+            // Вакансия состоит из категории, подразделения, службы и должности.
             const string sql = @"
 SELECT
     v.VacancyId,
@@ -251,6 +263,7 @@ ORDER BY cat.CategoryName, d.DepartmentName, s.ServiceName, p.PositionName;";
             DateTime statementDate,
             string otherInfo)
         {
+            // Карточка создается в транзакции: если одна вставка не пройдет, остальные тоже откатятся.
             using (var connection = CreateConnection())
             {
                 connection.Open();
@@ -259,6 +272,7 @@ ORDER BY cat.CategoryName, d.DepartmentName, s.ServiceName, p.PositionName;";
                 {
                     try
                     {
+                        // Сначала сохраняю самого кандидата.
                         var candidateId = ExecuteScalarInt(connection, transaction, @"
 INSERT INTO dbo.Candidates (FullName, BirthDate, Phone, Email)
 VALUES (@FullName, @BirthDate, @Phone, @Email);
@@ -268,6 +282,7 @@ SELECT SCOPE_IDENTITY();",
                             new SqlParameter("@Phone", NullIfEmpty(phone)),
                             new SqlParameter("@Email", NullIfEmpty(email)));
 
+                        // Потом сохраняю сведения об образовании кандидата.
                         ExecuteNonQuery(connection, transaction, @"
 INSERT INTO dbo.Education (CandidateId, EducationLevel, EducationType, Institution, DocumentInfo)
 VALUES (@CandidateId, @EducationLevel, @EducationType, @Institution, NULL);",
@@ -291,10 +306,12 @@ SELECT SCOPE_IDENTITY();",
                             new SqlParameter("@OtherInfo", NullIfEmpty(otherInfo)));
 
                         transaction.Commit();
+                        // Возвращаю ID созданной карточки, если он понадобится дальше.
                         return cardId;
                     }
                     catch
                     {
+                        // Если при сохранении произошла ошибка, отменяю все изменения этой операции.
                         transaction.Rollback();
                         throw;
                     }
@@ -304,6 +321,7 @@ SELECT SCOPE_IDENTITY();",
 
         public List<StageRow> GetStages(int cardId)
         {
+            // Получаю этапы изучения только для выбранной карточки.
             var result = new List<StageRow>();
 
             const string sql = @"
@@ -339,6 +357,7 @@ ORDER BY st.StageTypeId;";
 
         public List<CheckRow> GetChecks(int cardId)
         {
+            // Получаю служебные проверки только для выбранной карточки.
             var result = new List<CheckRow>();
 
             const string sql = @"
@@ -374,6 +393,7 @@ ORDER BY ct.CheckTypeId;";
 
         public void SaveStage(int cardId, int stageTypeId, DateTime? directionDate, DateTime? resultDate, string resultText)
         {
+            // Если такой этап уже есть, обновляю его. Если нет, создаю новую запись.
             const string sql = @"
 IF EXISTS (SELECT 1 FROM dbo.StudyStages WHERE CardId = @CardId AND StageTypeId = @StageTypeId)
 BEGIN
@@ -397,6 +417,7 @@ END";
 
         public void SaveCheck(int cardId, int checkTypeId, DateTime? directionDate, DateTime? resultDate, string resultText)
         {
+            // Проверки сохраняются по такому же принципу: обновить существующую или добавить новую.
             const string sql = @"
 IF EXISTS (SELECT 1 FROM dbo.ServiceChecks WHERE CardId = @CardId AND CheckTypeId = @CheckTypeId)
 BEGIN
@@ -420,6 +441,7 @@ END";
 
         public void SaveDecision(int cardId, string decisionType, DateTime? decisionDate, string refusalReason, string orderDetails)
         {
+            // Решение хранится отдельно, но еще меняет стадию самой карточки.
             const string decisionSql = @"
 IF EXISTS (SELECT 1 FROM dbo.Decisions WHERE CardId = @CardId)
 BEGIN
@@ -436,6 +458,7 @@ BEGIN
     VALUES (@CardId, @DecisionType, @DecisionDate, @RefusalReason, @OrderDetails);
 END";
 
+            // Перевожу выбранное решение в статус, который показывается в таблице карточек.
             var stage = decisionType == "Принят" ? "Принят на службу" :
                 decisionType == "Отказ" ? "Отказ" : "На оформлении";
 
@@ -463,6 +486,7 @@ END";
 
         private List<LookupItem> GetLookupItems(string sql)
         {
+            // Общий метод для простых справочников, где есть только ID и название.
             var result = new List<LookupItem>();
 
             using (var connection = CreateConnection())
@@ -487,6 +511,7 @@ END";
 
         private int EnsureDefaultHrUser(SqlConnection connection, SqlTransaction transaction)
         {
+            // Для учебного проекта создаю кадровика автоматически, если его еще нет в базе.
             const string findSql = "SELECT TOP 1 UserId FROM dbo.Users WHERE RoleName = N'Кадровик' ORDER BY UserId;";
             using (var findCommand = new SqlCommand(findSql, connection, transaction))
             {
@@ -505,6 +530,7 @@ SELECT SCOPE_IDENTITY();");
 
         private void ExecuteNonQuery(string sql, params SqlParameter[] parameters)
         {
+            // Выполняю SQL-команду, которая ничего не возвращает: INSERT, UPDATE и похожие запросы.
             using (var connection = CreateConnection())
             using (var command = new SqlCommand(sql, connection))
             {
@@ -516,6 +542,7 @@ SELECT SCOPE_IDENTITY();");
 
         private static void ExecuteNonQuery(SqlConnection connection, SqlTransaction transaction, string sql, params SqlParameter[] parameters)
         {
+            // Такой же метод, но для команд внутри транзакции.
             using (var command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddRange(parameters);
@@ -525,6 +552,7 @@ SELECT SCOPE_IDENTITY();");
 
         private static int ExecuteScalarInt(SqlConnection connection, SqlTransaction transaction, string sql, params SqlParameter[] parameters)
         {
+            // Использую для INSERT ... SELECT SCOPE_IDENTITY(), чтобы получить ID новой записи.
             using (var command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddRange(parameters);
@@ -534,21 +562,25 @@ SELECT SCOPE_IDENTITY();");
 
         private SqlConnection CreateConnection()
         {
+            // Создаю новое подключение каждый раз, а using потом сам его закрывает.
             return new SqlConnection(_connectionString);
         }
 
         private static object NullIfEmpty(string value)
         {
+            // Пустые строки лучше сохранять как NULL, чтобы в базе не было лишних пробелов.
             return string.IsNullOrWhiteSpace(value) ? (object)DBNull.Value : value.Trim();
         }
 
         private static object NullDate(DateTime? value)
         {
+            // Если дата не выбрана, в базу тоже отправляется NULL.
             return value.HasValue ? (object)value.Value : DBNull.Value;
         }
 
         private static int ReadInt(SqlDataReader reader, string columnName)
         {
+            // Маленькие методы чтения нужны, чтобы не повторять Convert в каждом месте.
             return Convert.ToInt32(reader[columnName]);
         }
 
