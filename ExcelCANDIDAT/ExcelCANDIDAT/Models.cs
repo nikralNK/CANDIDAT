@@ -2,6 +2,20 @@ using System;
 
 namespace ExcelCANDIDAT
 {
+    // Данные пользователя, который вошел в приложение.
+    public class UserSession
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+        public string Login { get; set; }
+        public string RoleName { get; set; }
+
+        public string DisplayText
+        {
+            get { return FullName + " (" + RoleName + ")"; }
+        }
+    }
+
     // Простая модель для справочников: ID хранится в базе, Name показывается пользователю.
     public class LookupItem
     {

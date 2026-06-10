@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1650" height="1050" viewBox="0 0 1650 1050">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#1f4e79"/>
+    </marker>
+    <style>
+      .box{fill:#f8fbff;stroke:#1f4e79;stroke-width:2.5}
+      .title{font-family:Arial, sans-serif;font-size:28px;font-weight:bold;fill:#1f2937}
+      .text{font-family:Arial, sans-serif;font-size:18px;fill:#111827}
+      .small{font-family:Arial, sans-serif;font-size:15px;fill:#111827}
+      .label{font-family:Arial, sans-serif;font-size:17px;font-weight:bold;fill:#1f4e79}
+      .line{stroke:#1f4e79;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#6b7280;stroke-width:1.5;stroke-dasharray:6 5;fill:none}
+    </style>
+  </defs>
+
+  <rect x="20" y="20" width="1610" height="1010" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <text x="825" y="65" text-anchor="middle" class="title">IDEF0 A0. Декомпозиция процесса учета кандидатов</text>
+
+  <rect x="170" y="250" width="250" height="115" class="box"/>
+  <text x="295" y="295" text-anchor="middle" class="text">Принять и проверить</text>
+  <text x="295" y="320" text-anchor="middle" class="text">сведения кандидата</text>
+  <text x="395" y="350" text-anchor="end" class="small">A1</text>
+
+  <rect x="500" y="250" width="250" height="115" class="box"/>
+  <text x="625" y="300" text-anchor="middle" class="text">Создать карточку</text>
+  <text x="625" y="325" text-anchor="middle" class="text">кандидата</text>
+  <text x="725" y="350" text-anchor="end" class="small">A2</text>
+
+  <rect x="850" y="180" width="250" height="115" class="box"/>
+  <text x="975" y="230" text-anchor="middle" class="text">Вести этапы</text>
+  <text x="975" y="255" text-anchor="middle" class="text">изучения</text>
+  <text x="1075" y="280" text-anchor="end" class="small">A3</text>
+
+  <rect x="850" y="390" width="250" height="115" class="box"/>
+  <text x="975" y="440" text-anchor="middle" class="text">Внести служебные</text>
+  <text x="975" y="465" text-anchor="middle" class="text">проверки</text>
+  <text x="1075" y="490" text-anchor="end" class="small">A4</text>
+
+  <rect x="1210" y="285" width="270" height="130" class="box"/>
+  <text x="1345" y="330" text-anchor="middle" class="text">Принять решение</text>
+  <text x="1345" y="355" text-anchor="middle" class="text">и сформировать</text>
+  <text x="1345" y="380" text-anchor="middle" class="text">отчет</text>
+  <text x="1455" y="400" text-anchor="end" class="small">A5</text>
+
+  <text x="70" y="165" class="label">Входы</text>
+  <path class="line" d="M70 285 H170"/>
+  <path class="line" d="M70 330 H170"/>
+  <text x="75" y="270" class="small">Сведения кандидата</text>
+  <text x="75" y="315" class="small">Документы, образование</text>
+
+  <text x="620" y="115" class="label">Управление</text>
+  <path class="line" d="M300 125 V250"/>
+  <path class="line" d="M625 125 V250"/>
+  <path class="line" d="M975 125 V180"/>
+  <path class="line" d="M1345 125 V285"/>
+  <text x="210" y="105" class="small">Правила обработки данных</text>
+  <text x="485" y="105" class="small">Справочники</text>
+  <text x="810" y="105" class="small">Регламент изучения</text>
+  <text x="1190" y="105" class="small">Шаблон отчета</text>
+
+  <text x="1160" y="720" class="label">Механизмы</text>
+  <path class="line" d="M300 750 V365"/>
+  <path class="line" d="M625 750 V365"/>
+  <path class="line" d="M975 750 V505"/>
+  <path class="line" d="M1345 750 V415"/>
+  <text x="215" y="790" class="small">Кадровик</text>
+  <text x="500" y="790" class="small">WPF-приложение</text>
+  <text x="835" y="790" class="small">MS SQL Server</text>
+  <text x="1185" y="790" class="small">Справочники</text>
+
+  <path class="line" d="M420 308 H500"/>
+  <text x="430" y="295" class="small">Проверенные сведения</text>
+
+  <path class="line" d="M750 305 C805 305 805 240 850 240"/>
+  <path class="line" d="M750 330 C805 330 805 450 850 450"/>
+  <text x="760" y="285" class="small">Карточка кандидата</text>
+  <text x="760" y="385" class="small">Карточка кандидата</text>
+
+  <path class="line" d="M1100 240 C1160 240 1160 320 1210 320"/>
+  <path class="line" d="M1100 450 C1160 450 1160 380 1210 380"/>
+  <text x="1110" y="225" class="small">Этапы изучения</text>
+  <text x="1110" y="470" class="small">Служебные проверки</text>
+
+  <text x="1500" y="215" class="label">Выходы</text>
+  <path class="line" d="M1480 325 H1585"/>
+  <path class="line" d="M1480 375 H1585"/>
+  <text x="1495" y="310" class="small">Итоговое решение</text>
+  <text x="1495" y="360" class="small">Excel-отчет</text>
+
+  <path class="dash" d="M145 850 H1510"/>
+  <text x="150" y="885" class="small">Примечание: диаграмма показывает работу приложения с точки зрения кадровика Информационного центра МВД.</text>
+</svg>

@@ -16,6 +16,7 @@ namespace ExcelCANDIDAT
     {
         // Сервис нужен, чтобы вся работа с базой была в одном месте.
         private readonly DatabaseService _database = new DatabaseService();
+        private readonly UserSession _currentUser;
 
         // Здесь храню карточки, которые показываются в таблице слева и в отчете.
         private List<CandidateCardRow> _cards = new List<CandidateCardRow>();
@@ -24,9 +25,16 @@ namespace ExcelCANDIDAT
         private List<VacancyOption> _categoryVacancies = new List<VacancyOption>();
 
         public MainWindow()
+            : this(new UserSession { UserId = 0, FullName = "Пользователь", Login = "local", RoleName = "Кадровик" })
         {
+        }
+
+        public MainWindow(UserSession currentUser)
+        {
+            _currentUser = currentUser;
             InitializeComponent();
             PrepareDefaultValues();
+            ShowCurrentUser();
             LoadFromDatabase();
         }
 
@@ -76,6 +84,7 @@ namespace ExcelCANDIDAT
                 return;
             }
 
+            _database.EnsureDefaultUsers();
             _database.EnsureDefaultVacancies();
 
             // Загружаю справочники в выпадающие списки.
@@ -91,6 +100,12 @@ namespace ExcelCANDIDAT
             if (CheckTypeComboBox.Items.Count > 0) CheckTypeComboBox.SelectedIndex = 0;
 
             RefreshCards();
+        }
+
+        private void ShowCurrentUser()
+        {
+            // Показываю, кто вошел в систему, чтобы было видно роль текущего пользователя.
+            CurrentUserTextBlock.Text = "Пользователь: " + _currentUser.DisplayText;
         }
 
         private void RefreshCards()

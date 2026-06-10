@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ExcelCANDIDAT
 {
@@ -33,6 +35,46 @@ namespace ExcelCANDIDAT
             {
                 errorText = ex.Message;
                 return false;
+            }
+        }
+
+        public void EnsureDefaultUsers()
+        {
+            // Для учебного проекта создаю двух пользователей, чтобы можно было показать вход в систему.
+            EnsureUser("Кадровик", "hr", "hr123", "Кадровик");
+            EnsureUser("Администратор", "admin", "admin123", "Администратор");
+        }
+
+        public UserSession AuthenticateUser(string login, string password)
+        {
+            // Проверяю логин и хэш пароля. Сам пароль в базе не хранится.
+            const string sql = @"
+SELECT TOP 1 UserId, FullName, Login, RoleName
+FROM dbo.Users
+WHERE Login = @Login AND PasswordHash = @PasswordHash;";
+
+            using (var connection = CreateConnection())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@Login", SqlDbType.NVarChar, 100).Value = login.Trim();
+                command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 255).Value = HashPassword(password);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        return null;
+                    }
+
+                    return new UserSession
+                    {
+                        UserId = ReadInt(reader, "UserId"),
+                        FullName = ReadString(reader, "FullName"),
+                        Login = ReadString(reader, "Login"),
+                        RoleName = ReadString(reader, "RoleName")
+                    };
+                }
             }
         }
 
@@ -528,6 +570,30 @@ VALUES (N'Кадровик', N'hr', N'not_used_in_demo', N'Кадровик');
 SELECT SCOPE_IDENTITY();");
         }
 
+        private void EnsureUser(string fullName, string login, string password, string roleName)
+        {
+            const string sql = @"
+IF EXISTS (SELECT 1 FROM dbo.Users WHERE Login = @Login)
+BEGIN
+    UPDATE dbo.Users
+    SET FullName = @FullName,
+        PasswordHash = @PasswordHash,
+        RoleName = @RoleName
+    WHERE Login = @Login;
+END
+ELSE
+BEGIN
+    INSERT INTO dbo.Users (FullName, Login, PasswordHash, RoleName)
+    VALUES (@FullName, @Login, @PasswordHash, @RoleName);
+END";
+
+            ExecuteNonQuery(sql,
+                new SqlParameter("@FullName", fullName),
+                new SqlParameter("@Login", login),
+                new SqlParameter("@PasswordHash", HashPassword(password)),
+                new SqlParameter("@RoleName", roleName));
+        }
+
         private void ExecuteNonQuery(string sql, params SqlParameter[] parameters)
         {
             // Выполняю SQL-команду, которая ничего не возвращает: INSERT, UPDATE и похожие запросы.
@@ -599,6 +665,17 @@ SELECT SCOPE_IDENTITY();");
         {
             var value = reader[columnName];
             return value == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(value);
+        }
+
+        private static string HashPassword(string password)
+        {
+            // Пароль переводится в SHA-256, чтобы не хранить его в базе обычным текстом.
+            using (var sha = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password ?? "");
+                var hash = sha.ComputeHash(bytes);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            }
         }
     }
 }
